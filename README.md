@@ -1,4 +1,4 @@
-﻿# Claude Code's Entire Source Code Got Leaked via a Sourcemap in npm, Let's Talk About It
+# Claude Code's Entire Source Code Got Leaked via a Sourcemap in npm, Let's Talk About It
 
 > **PS:** I've also published this [breakdown on my blog](https://kuber.studio/blog/AI/Claude-Code's-Entire-Source-Code-Got-Leaked-via-a-Sourcemap-in-npm,-Let's-Talk-About-it) with a better reading experience and UX :)
 
@@ -463,4 +463,4 @@ If there's one takeaway this has, it's that security is hard. But `.npmignore` i
 A writeup by [Kuber Mehta](https://kuber.studio/)
 ---
 
-Projeto adaptado da comunidade INEMA TDS - Marca Arckhe
+Projeto adaptado da comunidade ARCKHÉ TDS - Marca Arckhe

@@ -14,7 +14,7 @@ import { useNotifications } from '../context/notifications.js';
 import { type AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS, type AnalyticsMetadata_I_VERIFIED_THIS_IS_PII_TAGGED, logEvent } from '../services/analytics/index.js';
 import { clearPendingHint, getPendingHintSnapshot, markShownThisSession, subscribeToPendingHint } from '../utils/claudeCodeHints.js';
 import { logForDebugging } from '../utils/debug.js';
-import { disableHintRecommendations, markHintPluginShown, type PluginHintRecommendation, resolvePluginHint } from '../utils/plugins/hintRecommendation.js';
+import { disableHintRecommendations, mARCKHintPluginShown, type PluginHintRecommendation, resolvePluginHint } from '../utils/plugins/hintRecommendation.js';
 import { installPluginFromMarketplace } from '../utils/plugins/pluginInstallationHelpers.js';
 import { installPluginAndNotify, usePluginRecommendationBase } from './usePluginRecommendationBase.js';
 type UseClaudeCodeHintRecommendationResult = {
@@ -67,7 +67,7 @@ export function useClaudeCodeHintRecommendation() {
       if (!recommendation) {
         return;
       }
-      markHintPluginShown(recommendation.pluginId);
+      mARCKHintPluginShown(recommendation.pluginId);
       logEvent("tengu_plugin_hint_response", {
         _PROTO_plugin_name: recommendation.pluginName as AnalyticsMetadata_I_VERIFIED_THIS_IS_PII_TAGGED,
         _PROTO_marketplace_name: recommendation.marketplaceName as AnalyticsMetadata_I_VERIFIED_THIS_IS_PII_TAGGED,

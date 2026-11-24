@@ -194,7 +194,7 @@ function defaultStyle(): Style {
 }
 
 // --
-// Edge resolution — yoga's 9-edge model collapsed to 4 physical edges
+// Edge resolution â€” yoga's 9-edge model collapsed to 4 physical edges
 
 const EDGE_LEFT = 0
 const EDGE_TOP = 1
@@ -263,7 +263,7 @@ function hasAnyDefinedEdge(edges: Value[]): boolean {
 }
 
 // Hot path: resolve all 4 physical edges in one pass, writing into `out`.
-// Equivalent to calling resolveEdge() 4× with allowAuto=false, but hoists the
+// Equivalent to calling resolveEdge() 4Ã— with allowAuto=false, but hoists the
 // shared fallback lookups (Horizontal/Vertical/All/Start/End) and avoids
 // allocating a fresh 4-array on every layoutNode() call.
 function resolveEdges4Into(
@@ -271,7 +271,7 @@ function resolveEdges4Into(
   ownerSize: number,
   out: [number, number, number, number],
 ): void {
-  // Hoist fallbacks once — the 4 per-edge chains share these reads.
+  // Hoist fallbacks once â€” the 4 per-edge chains share these reads.
   const eH = edges[6]! // Edge.Horizontal
   const eV = edges[7]! // Edge.Vertical
   const eA = edges[8]! // Edge.All
@@ -279,27 +279,27 @@ function resolveEdges4Into(
   const eE = edges[5]! // Edge.End
   const pctDenom = isNaN(ownerSize) ? NaN : ownerSize / 100
 
-  // Left: edges[0] → Horizontal → All → Start
+  // Left: edges[0] â†’ Horizontal â†’ All â†’ Start
   let v = edges[0]!
   if (v.unit === 0) v = eH
   if (v.unit === 0) v = eA
   if (v.unit === 0) v = eS
   out[0] = v.unit === 1 ? v.value : v.unit === 2 ? v.value * pctDenom : 0
 
-  // Top: edges[1] → Vertical → All
+  // Top: edges[1] â†’ Vertical â†’ All
   v = edges[1]!
   if (v.unit === 0) v = eV
   if (v.unit === 0) v = eA
   out[1] = v.unit === 1 ? v.value : v.unit === 2 ? v.value * pctDenom : 0
 
-  // Right: edges[2] → Horizontal → All → End
+  // Right: edges[2] â†’ Horizontal â†’ All â†’ End
   v = edges[2]!
   if (v.unit === 0) v = eH
   if (v.unit === 0) v = eA
   if (v.unit === 0) v = eE
   out[2] = v.unit === 1 ? v.value : v.unit === 2 ? v.value * pctDenom : 0
 
-  // Bottom: edges[3] → Vertical → All
+  // Bottom: edges[3] â†’ Vertical â†’ All
   v = edges[3]!
   if (v.unit === 0) v = eV
   if (v.unit === 0) v = eA
@@ -416,17 +416,17 @@ export class Node {
   _crossSize = 0
   _lineIndex = 0
   // Fast-path flags maintained by style setters. Per CPU profile, the
-  // positioning loop calls isMarginAuto 6× and resolveEdgeRaw(position) 4×
-  // per child per layout pass — ~11k calls for the 1000-node bench, nearly
+  // positioning loop calls isMarginAuto 6Ã— and resolveEdgeRaw(position) 4Ã—
+  // per child per layout pass â€” ~11k calls for the 1000-node bench, nearly
   // all of which return false/undefined since most nodes have no auto
   // margins and no position insets. These flags let us skip straight to
   // the common case with a single branch.
   _hasAutoMargin = false
   _hasPosition = false
-  // Same pattern for the 3× resolveEdges4Into calls at the top of every
+  // Same pattern for the 3Ã— resolveEdges4Into calls at the top of every
   // layoutNode(). In the 1000-node bench ~67% of those calls operate on
   // all-undefined edge arrays (most nodes have no border; only cols have
-  // padding; only leaf cells have margin) — a single-branch skip beats
+  // padding; only leaf cells have margin) â€” a single-branch skip beats
   // ~20 property reads + ~15 compares + 4 writes of zeros.
   _hasPadding = false
   _hasBorder = false
@@ -436,8 +436,8 @@ export class Node {
   // asking the same question we cached the answer to. Two slots since
   // each node typically sees a measure call (performLayout=false, from
   // computeFlexBasis) followed by a layout call (performLayout=true) with
-  // different inputs per parent pass — a single slot thrashes. Re-layout
-  // bench (dirty one leaf, recompute root) went 2.7x→1.1x with this:
+  // different inputs per parent pass â€” a single slot thrashes. Re-layout
+  // bench (dirty one leaf, recompute root) went 2.7xâ†’1.1x with this:
   // clean siblings skip straight through, only the dirty chain recomputes.
   _lW = NaN
   _lH = NaN
@@ -450,8 +450,8 @@ export class Node {
   // _hasL stores INPUTS early (before compute) but layout.width/height are
   // mutated by the multi-entry cache and by subsequent compute calls with
   // different inputs. Without storing OUTPUTS, a _hasL hit returns whatever
-  // layout.width/height happened to be left by the last call — the scrollbox
-  // vpH=33→2624 bug. Store + restore outputs like the multi-entry cache does.
+  // layout.width/height happened to be left by the last call â€” the scrollbox
+  // vpH=33â†’2624 bug. Store + restore outputs like the multi-entry cache does.
   _lOutW = NaN
   _lOutH = NaN
   _hasL = false
@@ -465,10 +465,10 @@ export class Node {
   _mOutH = NaN
   _hasM = false
   // Cached computeFlexBasis result. For clean children, basis only depends
-  // on the container's inner dimensions — if those haven't changed, skip the
+  // on the container's inner dimensions â€” if those haven't changed, skip the
   // layoutNode(performLayout=false) recursion entirely. This is the hot path
   // for scroll: 500-message content container is dirty, its 499 clean
-  // children each get measured ~20× as the dirty chain's measure/layout
+  // children each get measured ~20Ã— as the dirty chain's measure/layout
   // passes cascade. Basis cache short-circuits at the child boundary.
   _fbBasis = NaN
   _fbOwnerW = NaN
@@ -478,13 +478,13 @@ export class Node {
   _fbCrossMode: MeasureMode = 0
   // Generation at which _fbBasis was written. Dirty nodes from a PREVIOUS
   // generation have stale cache (subtree changed), but within the SAME
-  // generation the cache is fresh — the dirty chain's measure→layout
-  // cascade invokes computeFlexBasis ≥2^depth times per calculateLayout on
+  // generation the cache is fresh â€” the dirty chain's measureâ†’layout
+  // cascade invokes computeFlexBasis â‰¥2^depth times per calculateLayout on
   // fresh-mounted items, and the subtree doesn't change between calls.
   // Gating on generation instead of isDirty_ lets fresh mounts (virtual
-  // scroll) cache-hit after first compute: 105k visits → ~10k.
+  // scroll) cache-hit after first compute: 105k visits â†’ ~10k.
   _fbGen = -1
-  // Multi-entry layout cache — stores (inputs → computed w,h) so hits with
+  // Multi-entry layout cache â€” stores (inputs â†’ computed w,h) so hits with
   // different inputs than _hasL can restore the right dimensions. Upstream
   // yoga uses 16; 4 covers Ink's dirty-chain depth. Packed as flat arrays
   // to avoid per-entry object allocs. Slot i uses indices [i*8, i*8+8) in
@@ -809,7 +809,7 @@ export class Node {
     this.markDirty()
   }
   setBoxSizing(_: BoxSizing): void {
-    // Not implemented — Ink doesn't use content-box
+    // Not implemented â€” Ink doesn't use content-box
   }
 
   // -- Style setters: spacing
@@ -859,7 +859,7 @@ export class Node {
     this.markDirty()
   }
 
-  // -- Style getters (partial — only what tests need)
+  // -- Style getters (partial â€” only what tests need)
 
   getFlexDirection(): FlexDirection {
     return this.style.flexDirection
@@ -984,8 +984,8 @@ function cacheWrite(
   }
   // First write after a dirty clears stale entries from before the dirty.
   // _cGen < _generation means entries are from a previous calculateLayout;
-  // if wasDirty, the subtree changed since then → old dimensions invalid.
-  // Clean nodes' old entries stay — same subtree → same result for same
+  // if wasDirty, the subtree changed since then â†’ old dimensions invalid.
+  // Clean nodes' old entries stay â€” same subtree â†’ same result for same
   // inputs, so cross-generation caching works (the scroll hot path where
   // 499 clean messages cache-hit while one dirty leaf recomputes).
   if (wasDirty && node._cGen !== _generation) {
@@ -1015,10 +1015,10 @@ function cacheWrite(
 // _hasL/_hasM inputs are committed at the TOP of layoutNode (before compute);
 // outputs must be committed HERE (after compute) so a cache hit can restore
 // the correct dimensions. Without this, a _hasL hit returns whatever
-// layout.width/height was left by the last call — which may be the intrinsic
+// layout.width/height was left by the last call â€” which may be the intrinsic
 // content height from a heightMode=Undefined measure pass rather than the
 // constrained viewport height from the layout pass. That's the scrollbox
-// vpH=33→2624 bug: scrollTop clamps to 0, viewport goes blank.
+// vpH=33â†’2624 bug: scrollTop clamps to 0, viewport goes blank.
 function commitCacheOutputs(node: Node, performLayout: boolean): void {
   if (performLayout) {
     node._lOutW = node.layout.width
@@ -1032,7 +1032,7 @@ function commitCacheOutputs(node: Node, performLayout: boolean): void {
 // --
 // Core flexbox algorithm
 
-// Profiling counters — reset per calculateLayout, read via getYogaCounters.
+// Profiling counters â€” reset per calculateLayout, read via getYogaCounters.
 // Incremented on each calculateLayout(). Nodes stamp _fbGen/_cGen when
 // their cache is written; a cache entry with gen === _generation was
 // computed THIS pass and is fresh regardless of isDirty_ state.
@@ -1064,7 +1064,7 @@ function layoutNode(
   ownerWidth: number,
   ownerHeight: number,
   performLayout: boolean,
-  // When true, ignore style dimension on this axis — the flex container
+  // When true, ignore style dimension on this axis â€” the flex container
   // has already determined the main size (flex-basis + grow/shrink result).
   forceWidth = false,
   forceHeight = false,
@@ -1073,14 +1073,14 @@ function layoutNode(
   const style = node.style
   const layout = node.layout
 
-  // Dirty-flag skip: clean subtree + matching inputs → layout object already
+  // Dirty-flag skip: clean subtree + matching inputs â†’ layout object already
   // holds the answer. A cached layout result also satisfies a measure request
   // (positions are a superset of dimensions); the reverse does not hold.
-  // Same-generation entries are fresh regardless of isDirty_ — they were
+  // Same-generation entries are fresh regardless of isDirty_ â€” they were
   // computed THIS calculateLayout, the subtree hasn't changed since.
   // Previous-generation entries need !isDirty_ (a dirty node's cache from
   // before the dirty is stale).
-  // sameGen bypass only for MEASURE calls — a layout-pass cache hit would
+  // sameGen bypass only for MEASURE calls â€” a layout-pass cache hit would
   // skip the child-positioning recursion (STEP 5), leaving children at
   // stale positions. Measure calls only need w/h which the cache stores.
   const sameGen = node._cGen === _generation && !performLayout
@@ -1103,14 +1103,14 @@ function layoutNode(
       return
     }
     // Multi-entry cache: scan for matching inputs, restore cached w/h on hit.
-    // Covers the scroll case where a dirty ancestor's measure→layout cascade
-    // produces N>1 distinct input combos per clean child — the single _hasL
+    // Covers the scroll case where a dirty ancestor's measureâ†’layout cascade
+    // produces N>1 distinct input combos per clean child â€” the single _hasL
     // slot thrashed, forcing full subtree recursion. With 500-message
     // scrollbox and one dirty leaf, this took dirty-leaf relayout from
-    // 76k layoutNode calls (21.7×nodes) to 4k (1.2×nodes), 6.86ms → 550µs.
+    // 76k layoutNode calls (21.7Ã—nodes) to 4k (1.2Ã—nodes), 6.86ms â†’ 550Âµs.
     // Same-generation check covers fresh-mounted (dirty) nodes during
-    // virtual scroll — the dirty chain invokes them ≥2^depth times, first
-    // call writes cache, rest hit: 105k visits → ~10k for 1593-node tree.
+    // virtual scroll â€” the dirty chain invokes them â‰¥2^depth times, first
+    // call writes cache, rest hit: 105k visits â†’ ~10k for 1593-node tree.
     if (node._cN > 0 && (sameGen || !node.isDirty_)) {
       const cIn = node._cIn!
       for (let i = 0; i < node._cN; i++) {
@@ -1150,13 +1150,13 @@ function layoutNode(
     }
   }
   // Commit cache inputs up front so every return path leaves a valid entry.
-  // Only clear isDirty_ on the LAYOUT pass — the measure pass (computeFlexBasis
-  // → layoutNode(performLayout=false)) runs before the layout pass in the same
+  // Only clear isDirty_ on the LAYOUT pass â€” the measure pass (computeFlexBasis
+  // â†’ layoutNode(performLayout=false)) runs before the layout pass in the same
   // calculateLayout call. Clearing dirty during measure lets the subsequent
   // layout pass hit the STALE _hasL cache from the previous calculateLayout
   // (before children were inserted), so ScrollBox content height never grows
   // and sticky-scroll never follows new content. A dirty node's _hasL entry is
-  // stale by definition — invalidate it so the layout pass recomputes.
+  // stale by definition â€” invalidate it so the layout pass recomputes.
   const wasDirty = node.isDirty_
   if (performLayout) {
     node._lW = availableWidth
@@ -1186,7 +1186,7 @@ function layoutNode(
     node._hasM = true
     // Don't clear isDirty_. For DIRTY nodes, invalidate _hasL so the upcoming
     // performLayout=true call recomputes with the new child set (otherwise
-    // sticky-scroll never follows new content — the bug from 4557bc9f9c).
+    // sticky-scroll never follows new content â€” the bug from 4557bc9f9c).
     // Clean nodes keep _hasL: their layout from the previous generation is
     // still valid, they're only here because an ancestor is dirty and called
     // with different inputs than cached.
@@ -1194,9 +1194,9 @@ function layoutNode(
   }
 
   // Resolve padding/border/margin against ownerWidth (yoga uses ownerWidth for %)
-  // Write directly into the pre-allocated layout arrays — avoids 3 allocs per
+  // Write directly into the pre-allocated layout arrays â€” avoids 3 allocs per
   // layoutNode call and 12 resolveEdge calls (was the #1 hotspot per CPU profile).
-  // Skip entirely when no edges are set — the 4-write zero is cheaper than
+  // Skip entirely when no edges are set â€” the 4-write zero is cheaper than
   // the ~20 reads + ~15 compares resolveEdges4Into does to produce zeros.
   const pad = layout.padding
   const bor = layout.border
@@ -1268,11 +1268,11 @@ function layoutNode(
             ownerHeight,
           )
     commitCacheOutputs(node, performLayout)
-    // Write cache even for dirty nodes — fresh-mounted items during virtual
-    // scroll are dirty on first layout, but the dirty chain's measure→layout
-    // cascade invokes them ≥2^depth times per calculateLayout. Writing here
+    // Write cache even for dirty nodes â€” fresh-mounted items during virtual
+    // scroll are dirty on first layout, but the dirty chain's measureâ†’layout
+    // cascade invokes them â‰¥2^depth times per calculateLayout. Writing here
     // lets the 2nd+ calls hit cache (isDirty_ was cleared in the layout pass
-    // above). Measured: 105k visits → 10k for a 1593-node fresh-mount tree.
+    // above). Measured: 105k visits â†’ 10k for a 1593-node fresh-mount tree.
     cacheWrite(
       node,
       availableWidth,
@@ -1299,11 +1299,11 @@ function layoutNode(
         ? height
         : boundAxis(style, false, paddingBorderHeight, ownerWidth, ownerHeight)
     commitCacheOutputs(node, performLayout)
-    // Write cache even for dirty nodes — fresh-mounted items during virtual
-    // scroll are dirty on first layout, but the dirty chain's measure→layout
-    // cascade invokes them ≥2^depth times per calculateLayout. Writing here
+    // Write cache even for dirty nodes â€” fresh-mounted items during virtual
+    // scroll are dirty on first layout, but the dirty chain's measureâ†’layout
+    // cascade invokes them â‰¥2^depth times per calculateLayout. Writing here
     // lets the 2nd+ calls hit cache (isDirty_ was cleared in the layout pass
-    // above). Measured: 105k visits → 10k for a 1593-node fresh-mount tree.
+    // above). Measured: 105k visits â†’ 10k for a 1593-node fresh-mount tree.
     cacheWrite(
       node,
       availableWidth,
@@ -1319,7 +1319,7 @@ function layoutNode(
     return
   }
 
-  // Container with children — run flexbox algorithm
+  // Container with children â€” run flexbox algorithm
   const mainAxis = style.flexDirection
   const crossAx = crossAxis(mainAxis)
   const isMainRow = isRow(mainAxis)
@@ -1346,7 +1346,7 @@ function layoutNode(
   )
 
   // Partition children into flow vs absolute. display:contents nodes are
-  // transparent — their children are lifted into the grandparent's child list
+  // transparent â€” their children are lifted into the grandparent's child list
   // (recursively), and the contents node itself gets zero layout.
   const flowChildren: Node[] = []
   const absChildren: Node[] = []
@@ -1355,7 +1355,7 @@ function layoutNode(
   // ownerW/H are the reference sizes for resolving children's percentage
   // values. Per CSS, a % width resolves against the parent's content-box
   // width. If this node's width is indefinite, children's % widths are also
-  // indefinite — do NOT fall through to the grandparent's size.
+  // indefinite â€” do NOT fall through to the grandparent's size.
   const ownerW = isDefined(width) ? width : NaN
   const ownerH = isDefined(height) ? height : NaN
   const isWrap = style.flexWrap !== Wrap.NoWrap
@@ -1384,7 +1384,7 @@ function layoutNode(
     for (const c of flowChildren) c._lineIndex = 0
     lines.push(flowChildren)
   } else {
-    // Line-break decisions use the min/max-clamped basis (flexbox spec §9.3.5:
+    // Line-break decisions use the min/max-clamped basis (flexbox spec Â§9.3.5:
     // "hypothetical main size"), not the raw flex-basis.
     let lineStart = 0
     let lineLen = 0
@@ -1413,8 +1413,8 @@ function layoutNode(
   const lineCrossSizes: number[] = new Array(lineCount)
   // Baseline layout tracks max ascent (baseline + leading margin) per line so
   // baseline-aligned items can be positioned at maxAscent - childBaseline.
-  const lineMaxAscent: number[] = isBaseline ? new Array(lineCount).fill(0) : []
-  let maxLineMain = 0
+  const lARCKHÉxAscent: number[] = isBaseline ? new Array(lineCount).fill(0) : []
+  let maxLARCKHÉin = 0
   let totalLinesCross = 0
   for (let li = 0; li < lineCount; li++) {
     const line = lines[li]!
@@ -1472,7 +1472,7 @@ function layoutNode(
           isMarginAuto(cStyle.margin, crossTrailE))
       // Single-line stretch goes directly to the container cross size.
       // Multi-line wrap measures intrinsic cross (Undefined mode) so
-      // flex-grow grandchildren don't expand to the container — the line
+      // flex-grow grandchildren don't expand to the container â€” the line
       // cross size is determined first, then items are re-stretched.
       if (isDefined(resolvedCrossStyle)) {
         childCrossSize = resolvedCrossStyle
@@ -1521,14 +1521,14 @@ function layoutNode(
         if (ascent > maxAscent) maxAscent = ascent
         if (descent > maxDescent) maxDescent = descent
       }
-      lineMaxAscent[li] = maxAscent
+      lARCKHÉxAscent[li] = maxAscent
       if (maxAscent + maxDescent > lineCross) {
         lineCross = maxAscent + maxDescent
       }
     }
     // layoutNode(c) at line ~1117 above already resolved c.layout.margin[] via
-    // resolveEdges4Into with the same ownerW — read directly instead of
-    // re-resolving through childMarginForAxis → 2× resolveEdge.
+    // resolveEdges4Into with the same ownerW â€” read directly instead of
+    // re-resolving through childMarginForAxis â†’ 2Ã— resolveEdge.
     const mainLead = leadingEdge(mainAxis)
     const mainTrail = trailingEdge(mainAxis)
     let consumed = lineGap
@@ -1538,7 +1538,7 @@ function layoutNode(
     }
     lineConsumedMain[li] = consumed
     lineCrossSizes[li] = lineCross
-    maxLineMain = Math.max(maxLineMain, consumed)
+    maxLARCKHÉin = Math.max(maxLARCKHÉin, consumed)
     totalLinesCross += lineCross
   }
   const totalCrossGap = lineCount > 1 ? gapCross * (lineCount - 1) : 0
@@ -1546,12 +1546,12 @@ function layoutNode(
 
   // STEP 4: Determine container dimensions. Per yoga's STEP 9, for both
   // AtMost (FitContent) and Undefined (MaxContent) the node sizes to its
-  // content — AtMost is NOT a hard clamp, items may overflow the available
+  // content â€” AtMost is NOT a hard clamp, items may overflow the available
   // space (CSS "fit-content" behavior). Only Scroll overflow clamps to the
   // available size. Wrap containers that broke into multiple lines under
   // AtMost fill the available main size since they wrapped at that boundary.
   const isScroll = style.overflow === Overflow.Scroll
-  const contentMain = maxLineMain + mainPadBorder
+  const contentMain = maxLARCKHÉin + mainPadBorder
   const finalMainSize =
     mainMode === MeasureMode.Exactly
       ? mainSize
@@ -1582,7 +1582,7 @@ function layoutNode(
     ownerHeight,
   )
   commitCacheOutputs(node, performLayout)
-  // Write cache even for dirty nodes — fresh-mounted items during virtual scroll
+  // Write cache even for dirty nodes â€” fresh-mounted items during virtual scroll
   cacheWrite(
     node,
     availableWidth,
@@ -1672,7 +1672,7 @@ function layoutNode(
     // the line cross size is known. Needed for multi-line wrap (line cross
     // wasn't known during initial measure) AND single-line when the container
     // cross was not Exactly (initial stretch at ~line 1250 was skipped because
-    // innerCrossSize wasn't defined — the container sized to max child cross).
+    // innerCrossSize wasn't defined â€” the container sized to max child cross).
     if (isWrap || crossMode !== MeasureMode.Exactly) {
       for (const c of line) {
         const cStyle = c.style
@@ -1768,7 +1768,7 @@ function layoutNode(
       const cMargin = c.style.margin
       // c.layout.margin[] was populated by resolveEdges4Into inside the
       // layoutNode(c) call above (same ownerW). Read resolved values directly
-      // instead of re-running the edge fallback chain 4× via resolveEdge.
+      // instead of re-running the edge fallback chain 4Ã— via resolveEdge.
       // Auto margins resolve to 0 in layout.margin, so autoMarginMainSize
       // substitution still uses the isMarginAuto check against style.
       const cLayoutMargin = c.layout.margin
@@ -1794,7 +1794,7 @@ function layoutNode(
         mCrossLead = autoCrossLead ? 0 : cLayoutMargin[crossLeadEdgePhys]!
         mCrossTrail = autoCrossTrail ? 0 : cLayoutMargin[crossTrailEdgePhys]!
       } else {
-        // Fast path: no auto margins — read resolved values directly.
+        // Fast path: no auto margins â€” read resolved values directly.
         mMainLead = cLayoutMargin[mainLeadEdgePhys]!
         mMainTrail = cLayoutMargin[mainTrailEdgePhys]!
         mCrossLead = cLayoutMargin[crossLeadEdgePhys]!
@@ -1834,7 +1834,7 @@ function layoutNode(
             if (isBaseline) {
               crossPos =
                 effectiveLineCrossPos +
-                lineMaxAscent[li]! -
+                lARCKHÉxAscent[li]! -
                 calculateBaseline(c)
             }
             break
@@ -1843,8 +1843,8 @@ function layoutNode(
         }
       }
 
-      // Relative position offsets. Fast path: no position insets set →
-      // skip 4× resolveEdgeRaw + 4× resolveValue + 4× isDefined.
+      // Relative position offsets. Fast path: no position insets set â†’
+      // skip 4Ã— resolveEdgeRaw + 4Ã— resolveValue + 4Ã— isDefined.
       let relX = 0
       let relY = 0
       if (c._hasPosition) {
@@ -1921,7 +1921,7 @@ function layoutAbsoluteChild(
   const rBottom = resolveValue(posBottom, parentHeight)
 
   // Absolute children's percentage dimensions resolve against the containing
-  // block's padding-box (parent size minus border), per CSS §10.1.
+  // block's padding-box (parent size minus border), per CSS Â§10.1.
   const paddingBoxW = parentWidth - bor[0] - bor[2]
   const paddingBoxH = parentHeight - bor[1] - bor[3]
   let cw = resolveValue(cs.width, paddingBoxW)
@@ -1967,7 +1967,7 @@ function layoutAbsoluteChild(
   } else if (isDefined(rRight)) {
     left = parentWidth - bor[2] - rRight - child.layout.width - mR
   } else if (mainRow) {
-    // Main axis — justify-content, flipped for reversed
+    // Main axis â€” justify-content, flipped for reversed
     const lead = pad[0] + bor[0]
     const trail = parentWidth - pad[2] - bor[2]
     left = reversed
@@ -2068,10 +2068,10 @@ function computeFlexBasis(
   // Same-generation cache hit: basis was computed THIS calculateLayout, so
   // it's fresh regardless of isDirty_. Covers both clean children (scrolling
   // past unchanged messages) AND fresh-mounted dirty children (virtual
-  // scroll mounts new items — the dirty chain's measure→layout cascade
-  // invokes this ≥2^depth times, but the child's subtree doesn't change
+  // scroll mounts new items â€” the dirty chain's measureâ†’layout cascade
+  // invokes this â‰¥2^depth times, but the child's subtree doesn't change
   // between calls within one calculateLayout). For clean children with
-  // cache from a PREVIOUS generation, also hit if inputs match — isDirty_
+  // cache from a PREVIOUS generation, also hit if inputs match â€” isDirty_
   // gates since a dirty child's previous-gen cache is stale.
   const sameGen = child._fbGen === _generation
   if (
@@ -2133,14 +2133,14 @@ function computeFlexBasis(
   }
 
   // Upstream yoga (YGNodeComputeFlexBasisForChild) passes the available inner
-  // width with mode AtMost when the subtree will call a measure-func — so text
+  // width with mode AtMost when the subtree will call a measure-func â€” so text
   // nodes don't report unconstrained intrinsic width as flex-basis, which
   // would force siblings to shrink and the text to wrap at the wrong width.
   // Passing Undefined here made Ink's <Text> inside <Box flexGrow={1}> get
   // width = intrinsic instead of available, dropping chars at wrap boundaries.
   //
   // Two constraints on when this applies:
-  //   - Width only. Height is never constrained during basis measurement —
+  //   - Width only. Height is never constrained during basis measurement â€”
   //     column containers must measure children at natural height so
   //     scrollable content can overflow (constraining height clips ScrollBox).
   //   - Subtree has a measure-func. Pure layout subtrees (no measure-func)
@@ -2187,7 +2187,7 @@ function resolveFlexibleLengths(
   ownerW: number,
   ownerH: number,
 ): void {
-  // Multi-pass flex distribution per CSS flexbox spec §9.7 "Resolving Flexible
+  // Multi-pass flex distribution per CSS flexbox spec Â§9.7 "Resolving Flexible
   // Lengths": distribute free space, detect min/max violations, freeze all
   // violators, redistribute among unfrozen children. Repeat until stable.
   const n = children.length
@@ -2230,8 +2230,8 @@ function resolveFlexibleLengths(
     }
     if (unfrozenCount === 0) break
     let remaining = initialFree - frozenDelta
-    // Spec §9.7 step 4c: if sum of flex factors < 1, only distribute
-    // initialFree × sum, not the full remaining space (partial flex).
+    // Spec Â§9.7 step 4c: if sum of flex factors < 1, only distribute
+    // initialFree Ã— sum, not the full remaining space (partial flex).
     if (remaining > 0 && totalGrow > 0 && totalGrow < 1) {
       const scaled = initialFree * totalGrow
       if (scaled < remaining) remaining = scaled
@@ -2265,7 +2265,7 @@ function resolveFlexibleLengths(
       c._mainSize = clamped
       totalViolation += clamped - t
     }
-    // Freeze per spec §9.7 step 5: if totalViolation is zero freeze all; if
+    // Freeze per spec Â§9.7 step 5: if totalViolation is zero freeze all; if
     // positive freeze min-violators; if negative freeze max-violators.
     if (totalViolation === 0) break
     let anyFrozen = false
@@ -2297,7 +2297,7 @@ function resolveChildAlign(parent: Node, child: Node): Align {
     : child.style.alignSelf
 }
 
-// Baseline of a node per CSS Flexbox §8.5 / yoga's YGBaseline. Leaf nodes
+// Baseline of a node per CSS Flexbox Â§8.5 / yoga's YGBaseline. Leaf nodes
 // (no children) use their own height. Containers recurse into the first
 // baseline-aligned child on the first line (or the first flow child if none
 // are baseline-aligned), returning that child's baseline + its top offset.
@@ -2362,7 +2362,7 @@ function boundAxis(
   const maxU = maxV.unit
   // Fast path: no min/max constraints set. Per CPU profile this is the
   // overwhelmingly common case (~32k calls/layout on the 1000-node bench,
-  // nearly all with undefined min/max) — skipping 2× resolveValue + 2× isNaN
+  // nearly all with undefined min/max) â€” skipping 2Ã— resolveValue + 2Ã— isNaN
   // that always no-op. Unit.Undefined = 0.
   if (minU === 0 && maxU === 0) return value
   const owner = isWidth ? ownerWidth : ownerHeight
@@ -2389,12 +2389,12 @@ function zeroLayoutRecursive(node: Node): void {
     c.layout.top = 0
     c.layout.width = 0
     c.layout.height = 0
-    // Invalidate layout cache — without this, unhide → calculateLayout finds
+    // Invalidate layout cache â€” without this, unhide â†’ calculateLayout finds
     // the child clean (!isDirty_) with _hasL intact, hits the cache at line
-    // ~1086, restores stale _lOutW/_lOutH, and returns early — skipping the
+    // ~1086, restores stale _lOutW/_lOutH, and returns early â€” skipping the
     // child-positioning recursion. Grandchildren stay at (0,0,0,0) from the
     // zeroing above and render invisible. isDirty_=true also gates _cN and
-    // _fbBasis via their (sameGen || !isDirty_) checks — _cGen/_fbGen freeze
+    // _fbBasis via their (sameGen || !isDirty_) checks â€” _cGen/_fbGen freeze
     // during hide so sameGen is false on unhide.
     c.isDirty_ = true
     c._hasL = false
@@ -2406,7 +2406,7 @@ function zeroLayoutRecursive(node: Node): void {
 function collectLayoutChildren(node: Node, flow: Node[], abs: Node[]): void {
   // Partition a node's children into flow and absolute lists, flattening
   // display:contents subtrees so their children are laid out as direct
-  // children of this node (per CSS display:contents spec — the box is removed
+  // children of this node (per CSS display:contents spec â€” the box is removed
   // from the layout tree but its children remain, lifted to the grandparent).
   for (const c of node.children) {
     const disp = c.style.display
@@ -2421,7 +2421,7 @@ function collectLayoutChildren(node: Node, flow: Node[], abs: Node[]): void {
       c.layout.top = 0
       c.layout.width = 0
       c.layout.height = 0
-      // Recurse — nested display:contents lifts all the way up. The contents
+      // Recurse â€” nested display:contents lifts all the way up. The contents
       // node's own margin/padding/position/dimensions are ignored.
       collectLayoutChildren(c, flow, abs)
     } else if (c.style.positionType === PositionType.Absolute) {
@@ -2451,7 +2451,7 @@ function roundLayout(
   // Upstream YGRoundValueToPixelGrid: text nodes (has measureFunc) floor their
   // positions so wrapped text never starts past its allocated column. Width
   // uses ceil-if-fractional to avoid clipping the last glyph. Non-text nodes
-  // use standard round. Matches yoga's PixelGrid.cpp — without this, justify
+  // use standard round. Matches yoga's PixelGrid.cpp â€” without this, justify
   // center/space-evenly positions are off-by-one vs WASM and flex-shrink
   // overflow places siblings at the wrong column.
   const isText = node.measureFunc !== null
@@ -2512,9 +2512,9 @@ function parseDimension(v: number | string | undefined): Value {
   if (v === undefined) return UNDEFINED_VALUE
   if (v === 'auto') return AUTO_VALUE
   if (typeof v === 'number') {
-    // WASM yoga's YGFloatIsUndefined treats NaN and ±Infinity as undefined.
+    // WASM yoga's YGFloatIsUndefined treats NaN and Â±Infinity as undefined.
     // Ink passes height={Infinity} (e.g. LogSelector maxHeight default) and
-    // expects it to mean "unconstrained" — storing it as a literal point value
+    // expects it to mean "unconstrained" â€” storing it as a literal point value
     // makes the node height Infinity and breaks all downstream layout.
     return Number.isFinite(v) ? pointValue(v) : UNDEFINED_VALUE
   }

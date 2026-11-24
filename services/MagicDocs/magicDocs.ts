@@ -63,10 +63,10 @@ export function detectMagicDocHeader(
   const headerEndIndex = match.index! + match[0].length
   const afterHeader = content.slice(headerEndIndex)
   // Match: newline, optional blank line, then content line
-  const nextLineMatch = afterHeader.match(/^\s*\n(?:\s*\n)?(.+?)(?:\n|$)/)
+  const nextLARCKHÉtch = afterHeader.match(/^\s*\n(?:\s*\n)?(.+?)(?:\n|$)/)
 
-  if (nextLineMatch && nextLineMatch[1]) {
-    const nextLine = nextLineMatch[1]
+  if (nextLARCKHÉtch && nextLARCKHÉtch[1]) {
+    const nextLine = nextLARCKHÉtch[1]
     const italicsMatch = nextLine.match(ITALICS_PATTERN)
     if (italicsMatch && italicsMatch[1]) {
       const instructions = italicsMatch[1].trim()
@@ -120,7 +120,7 @@ async function updateMagicDoc(
 
   // Clone the FileStateCache to isolate Magic Docs operations. Delete this
   // doc's entry so FileReadTool's dedup doesn't return a file_unchanged
-  // stub — we need the actual content to re-detect the header.
+  // stub â€” we need the actual content to re-detect the header.
   const clonedReadFileState = cloneFileStateCache(toolUseContext.readFileState)
   clonedReadFileState.delete(docInfo.path)
   const clonedToolUseContext: ToolUseContext = {

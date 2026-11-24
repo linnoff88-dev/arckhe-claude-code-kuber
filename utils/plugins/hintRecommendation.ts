@@ -138,7 +138,7 @@ export async function resolvePluginHint(
  * Record that a prompt for this plugin was surfaced. Called regardless of
  * the user's yes/no response — show-once semantics.
  */
-export function markHintPluginShown(pluginId: string): void {
+export function mARCKHintPluginShown(pluginId: string): void {
   saveGlobalConfig(current => {
     const existing = current.claudeCodeHints?.plugin ?? []
     if (existing.includes(pluginId)) return current

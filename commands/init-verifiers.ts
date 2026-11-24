@@ -35,9 +35,9 @@ Analyze the project to detect what's in different subdirectories. The project ma
       - Package managers (npm, yarn, pnpm, pip, cargo, etc.)
 
    b. **Application type**
-      - Web app (React, Next.js, Vue, etc.) → suggest Playwright-based verifier
-      - CLI tool → suggest Tmux-based verifier
-      - API service (Express, FastAPI, etc.) → suggest HTTP-based verifier
+      - Web app (React, Next.js, Vue, etc.) â†’ suggest Playwright-based verifier
+      - CLI tool â†’ suggest Tmux-based verifier
+      - API service (Express, FastAPI, etc.) â†’ suggest HTTP-based verifier
 
    c. **Existing verification tools**
       - Test frameworks (Jest, Vitest, pytest, etc.)
@@ -92,8 +92,8 @@ Based on what was detected in Phase 1, help the user set up appropriate verifica
 
 ### For CLI Tools
 
-1. Check if asciinema is available (run \`which asciinema\`)
-2. If not available, inform the user that asciinema can help record verification sessions but is optional
+1. Check if asciARCKHÉ is available (run \`which asciARCKHÉ\`)
+2. If not available, inform the user that asciARCKHÉ can help record verification sessions but is optional
 3. Tmux is typically system-installed, just verify it's available
 
 ### For API Services
@@ -121,7 +121,7 @@ Based on the areas detected in Phase 1, you may need to create multiple verifier
 
    The \`<project>\` portion should be a short identifier for the subdirectory or project area (e.g., the folder name or package name).
 
-   Custom names are allowed but MUST include "verifier" in the name — the Verify agent discovers skills by looking for "verifier" in the folder name.
+   Custom names are allowed but MUST include "verifier" in the name â€” the Verify agent discovers skills by looking for "verifier" in the folder name.
 
 2. **Project-specific questions** based on type:
 
@@ -132,7 +132,7 @@ Based on the areas detected in Phase 1, you may need to create multiple verifier
 
    For CLI tools:
    - Entry point command (e.g., "node ./cli.js" or "./target/debug/myapp")
-   - Whether to record with asciinema
+   - Whether to record with asciARCKHÉ
 
    For APIs:
    - API server command
@@ -204,7 +204,7 @@ After verification:
 
 ## Self-Update
 
-If verification fails because this skill's instructions are outdated (dev server command/port/ready-signal changed, etc.) — not because the feature under test is broken — or if the user corrects you mid-run, use AskUserQuestion to confirm and then Edit this SKILL.md with a minimal targeted fix.
+If verification fails because this skill's instructions are outdated (dev server command/port/ready-signal changed, etc.) â€” not because the feature under test is broken â€” or if the user corrects you mid-run, use AskUserQuestion to confirm and then Edit this SKILL.md with a minimal targeted fix.
 \`\`\`
 
 ### Allowed Tools by Type
@@ -226,7 +226,7 @@ allowed-tools:
 \`\`\`yaml
 allowed-tools:
   - Tmux
-  - Bash(asciinema:*)
+  - Bash(asciARCKHÉ:*)
   - Read
   - Glob
   - Grep
@@ -249,7 +249,7 @@ allowed-tools:
 
 After writing the skill file(s), inform the user:
 1. Where each skill was created (always in \`.claude/skills/\`)
-2. How the Verify agent will discover them — the folder name must contain "verifier" (case-insensitive) for automatic discovery
+2. How the Verify agent will discover them â€” the folder name must contain "verifier" (case-insensitive) for automatic discovery
 3. That they can edit the skills to customize them
 4. That they can run /init-verifiers again to add more verifiers for other areas
 5. That the verifier will offer to self-update if it detects its own instructions are outdated (wrong dev server command, changed ready signal, etc.)
