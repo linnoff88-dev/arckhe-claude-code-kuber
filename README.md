@@ -463,4 +463,4 @@ If there's one takeaway this has, it's that security is hard. But `.npmignore` i
 A writeup by [Kuber Mehta](https://kuber.studio/)
 ---
 
-Projeto adaptado da comunidade ARCKHÉ TDS - Marca Arckhe
+Projeto adaptado da comunidade ARCKHÉ TDS - ARCKHÉe

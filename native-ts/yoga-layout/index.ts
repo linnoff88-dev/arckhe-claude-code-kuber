@@ -263,7 +263,7 @@ function hasAnyDefinedEdge(edges: Value[]): boolean {
 }
 
 // Hot path: resolve all 4 physical edges in one pass, writing into `out`.
-// Equivalent to calling resolveEdge() 4Ã— with allowAuto=false, but hoists the
+// Equivalent to calling resolveEdge() 4ê— with allowAuto=false, but hoists the
 // shared fallback lookups (Horizontal/Vertical/All/Start/End) and avoids
 // allocating a fresh 4-array on every layoutNode() call.
 function resolveEdges4Into(
@@ -416,14 +416,14 @@ export class Node {
   _crossSize = 0
   _lineIndex = 0
   // Fast-path flags maintained by style setters. Per CPU profile, the
-  // positioning loop calls isMarginAuto 6Ã— and resolveEdgeRaw(position) 4Ã—
+  // positioning loop calls isMarginAuto 6ê— and resolveEdgeRaw(position) 4ê—
   // per child per layout pass â€” ~11k calls for the 1000-node bench, nearly
   // all of which return false/undefined since most nodes have no auto
   // margins and no position insets. These flags let us skip straight to
   // the common case with a single branch.
   _hasAutoMargin = false
   _hasPosition = false
-  // Same pattern for the 3Ã— resolveEdges4Into calls at the top of every
+  // Same pattern for the 3ê— resolveEdges4Into calls at the top of every
   // layoutNode(). In the 1000-node bench ~67% of those calls operate on
   // all-undefined edge arrays (most nodes have no border; only cols have
   // padding; only leaf cells have margin) â€” a single-branch skip beats
@@ -468,7 +468,7 @@ export class Node {
   // on the container's inner dimensions â€” if those haven't changed, skip the
   // layoutNode(performLayout=false) recursion entirely. This is the hot path
   // for scroll: 500-message content container is dirty, its 499 clean
-  // children each get measured ~20Ã— as the dirty chain's measure/layout
+  // children each get measured ~20ê— as the dirty chain's measure/layout
   // passes cascade. Basis cache short-circuits at the child boundary.
   _fbBasis = NaN
   _fbOwnerW = NaN
@@ -1107,7 +1107,7 @@ function layoutNode(
     // produces N>1 distinct input combos per clean child â€” the single _hasL
     // slot thrashed, forcing full subtree recursion. With 500-message
     // scrollbox and one dirty leaf, this took dirty-leaf relayout from
-    // 76k layoutNode calls (21.7Ã—nodes) to 4k (1.2Ã—nodes), 6.86ms â†’ 550Âµs.
+    // 76k layoutNode calls (21.7ê—nodes) to 4k (1.2ê—nodes), 6.86ms â†’ 550Âµs.
     // Same-generation check covers fresh-mounted (dirty) nodes during
     // virtual scroll â€” the dirty chain invokes them â‰¥2^depth times, first
     // call writes cache, rest hit: 105k visits â†’ ~10k for 1593-node tree.
@@ -1528,7 +1528,7 @@ function layoutNode(
     }
     // layoutNode(c) at line ~1117 above already resolved c.layout.margin[] via
     // resolveEdges4Into with the same ownerW â€” read directly instead of
-    // re-resolving through childMarginForAxis â†’ 2Ã— resolveEdge.
+    // re-resolving through childMarginForAxis â†’ 2ê— resolveEdge.
     const mainLead = leadingEdge(mainAxis)
     const mainTrail = trailingEdge(mainAxis)
     let consumed = lineGap
@@ -1768,7 +1768,7 @@ function layoutNode(
       const cMargin = c.style.margin
       // c.layout.margin[] was populated by resolveEdges4Into inside the
       // layoutNode(c) call above (same ownerW). Read resolved values directly
-      // instead of re-running the edge fallback chain 4Ã— via resolveEdge.
+      // instead of re-running the edge fallback chain 4ê— via resolveEdge.
       // Auto margins resolve to 0 in layout.margin, so autoMarginMainSize
       // substitution still uses the isMarginAuto check against style.
       const cLayoutMargin = c.layout.margin
@@ -1844,7 +1844,7 @@ function layoutNode(
       }
 
       // Relative position offsets. Fast path: no position insets set â†’
-      // skip 4Ã— resolveEdgeRaw + 4Ã— resolveValue + 4Ã— isDefined.
+      // skip 4ê— resolveEdgeRaw + 4ê— resolveValue + 4ê— isDefined.
       let relX = 0
       let relY = 0
       if (c._hasPosition) {
@@ -2231,7 +2231,7 @@ function resolveFlexibleLengths(
     if (unfrozenCount === 0) break
     let remaining = initialFree - frozenDelta
     // Spec Â§9.7 step 4c: if sum of flex factors < 1, only distribute
-    // initialFree Ã— sum, not the full remaining space (partial flex).
+    // initialFree ê— sum, not the full remaining space (partial flex).
     if (remaining > 0 && totalGrow > 0 && totalGrow < 1) {
       const scaled = initialFree * totalGrow
       if (scaled < remaining) remaining = scaled
@@ -2362,7 +2362,7 @@ function boundAxis(
   const maxU = maxV.unit
   // Fast path: no min/max constraints set. Per CPU profile this is the
   // overwhelmingly common case (~32k calls/layout on the 1000-node bench,
-  // nearly all with undefined min/max) â€” skipping 2Ã— resolveValue + 2Ã— isNaN
+  // nearly all with undefined min/max) â€” skipping 2ê— resolveValue + 2ê— isNaN
   // that always no-op. Unit.Undefined = 0.
   if (minU === 0 && maxU === 0) return value
   const owner = isWidth ? ownerWidth : ownerHeight
